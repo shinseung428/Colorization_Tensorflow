@@ -15,6 +15,24 @@ def check_image(image):
     image.set_shape(shape)
     return image
 
+def deprocess(image):
+    with tf.name_scope("deprocess"):
+        # [-1, 1] => [0, 1]
+        return (image + 1.0) / 2.0
+
+
+def deprocess_lab(L_chan, a_chan, b_chan):
+    with tf.name_scope("deprocess_lab"):
+        # this is axis=3 instead of axis=2 because we process individual images but deprocess batches
+        return tf.stack([(L_chan + 1.0) / 2.0 * 100.0, a_chan * 110.0, b_chan * 110.0], axis=3)
+
+def preprocess_lab(lab):
+    with tf.name_scope("preprocess_lab"):
+        L_chan, a_chan, b_chan = tf.unstack(lab, axis=3)
+        # L_chan: black and white with input range [0, 100]
+        # a_chan/b_chan: color channels with input range ~[-110, 110], not exact
+        # [0, 100] => [-1, 1],  ~[-110, 110] => [-1, 1]
+        return [L_chan / 50.0 - 1.0, a_chan / 110.0, b_chan / 110.0]
 
 
 def lab_to_rgb(lab):
@@ -27,17 +45,17 @@ def lab_to_rgb(lab):
             # convert to fxfyfz
             lab_to_fxfyfz = tf.constant([
                 #   fx      fy        fz
-                [1/116.0, 1/116.0,  1/116.0], # l
-                [1/500.0,     0.0,      0.0], # a
-                [    0.0,     0.0, -1/200.0], # b
+                [1.0/116.0, 1.0/116.0,  1.0/116.0], # l
+                [1.0/500.0,     0.0,      0.0], # a
+                [    0.0,     0.0, -1.0/200.0], # b
             ])
             fxfyfz_pixels = tf.matmul(lab_pixels + tf.constant([16.0, 0.0, 0.0]), lab_to_fxfyfz)
 
             # convert to xyz
-            epsilon = 6/29
+            epsilon = 6.0/29.0
             linear_mask = tf.cast(fxfyfz_pixels <= epsilon, dtype=tf.float32)
             exponential_mask = tf.cast(fxfyfz_pixels > epsilon, dtype=tf.float32)
-            xyz_pixels = (3 * epsilon**2 * (fxfyfz_pixels - 4/29)) * linear_mask + (fxfyfz_pixels ** 3) * exponential_mask
+            xyz_pixels = (3.0 * epsilon**2 * (fxfyfz_pixels - 4.0/29.0)) * linear_mask + (fxfyfz_pixels ** 3) * exponential_mask
 
             # denormalize for D65 white point
             xyz_pixels = tf.multiply(xyz_pixels, [0.950456, 1.0, 1.088754])
@@ -54,7 +72,7 @@ def lab_to_rgb(lab):
             rgb_pixels = tf.clip_by_value(rgb_pixels, 0.0, 1.0)
             linear_mask = tf.cast(rgb_pixels <= 0.0031308, dtype=tf.float32)
             exponential_mask = tf.cast(rgb_pixels > 0.0031308, dtype=tf.float32)
-            srgb_pixels = (rgb_pixels * 12.92 * linear_mask) + ((rgb_pixels ** (1/2.4) * 1.055) - 0.055) * exponential_mask
+            srgb_pixels = (rgb_pixels * 12.92 * linear_mask) + ((rgb_pixels ** (1.0/2.4) * 1.055) - 0.055) * exponential_mask
 
         return tf.reshape(srgb_pixels, tf.shape(lab))
 
@@ -64,7 +82,7 @@ def rgb_to_lab(srgb):
     with tf.name_scope("rgb_to_lab"):
         srgb = check_image(srgb)
         srgb_pixels = tf.reshape(srgb, [-1, 3])
-
+        
         with tf.name_scope("srgb_to_xyz"):
             linear_mask = tf.cast(srgb_pixels <= 0.04045, dtype=tf.float32)
             exponential_mask = tf.cast(srgb_pixels > 0.04045, dtype=tf.float32)
@@ -75,6 +93,7 @@ def rgb_to_lab(srgb):
                 [0.357580, 0.715160, 0.119193], # G
                 [0.180423, 0.072169, 0.950227], # B
             ])
+
             xyz_pixels = tf.matmul(rgb_pixels, rgb_to_xyz)
 
         # https://en.wikipedia.org/wiki/Lab_color_space#CIELAB-CIEXYZ_conversions
@@ -82,12 +101,12 @@ def rgb_to_lab(srgb):
             # convert to fx = f(X/Xn), fy = f(Y/Yn), fz = f(Z/Zn)
 
             # normalize for D65 white point
-            xyz_normalized_pixels = tf.multiply(xyz_pixels, [1/0.950456, 1.0, 1/1.088754])
+            xyz_normalized_pixels = tf.multiply(xyz_pixels, [1.0/0.950456, 1.0, 1.0/1.088754])
 
-            epsilon = 6/29
+            epsilon = 6.0/29.0
             linear_mask = tf.cast(xyz_normalized_pixels <= (epsilon**3), dtype=tf.float32)
             exponential_mask = tf.cast(xyz_normalized_pixels > (epsilon**3), dtype=tf.float32)
-            fxfyfz_pixels = (xyz_normalized_pixels / (3 * epsilon**2) + 4/29) * linear_mask + (xyz_normalized_pixels ** (1/3)) * exponential_mask
+            fxfyfz_pixels = (xyz_normalized_pixels / (3.0 * epsilon**2) + 4.0/29.0) * linear_mask + (xyz_normalized_pixels ** (1.0/3.0)) * exponential_mask
 
             # convert to lab
             fxfyfz_to_lab = tf.constant([
@@ -97,5 +116,32 @@ def rgb_to_lab(srgb):
                 [  0.0,    0.0, -200.0], # fz
             ])
             lab_pixels = tf.matmul(fxfyfz_pixels, fxfyfz_to_lab) + tf.constant([-16.0, 0.0, 0.0])
-
+        
+        
+        #lab_pixels = tf.Print(lab_pixels, [epsilon], summarize=10, message="srgb_pixels")
+        # lab_pixels = tf.Print(lab_pixels, [srgb_pixels], summarize=10, message="srgb_pixels")
+        # lab_pixels = tf.Print(lab_pixels, [rgb_pixels], summarize=10, message="rgb_pixels")
+        # lab_pixels = tf.Print(lab_pixels, [xyz_pixels], summarize=10, message="xyz_pixels")
+        # lab_pixels = tf.Print(lab_pixels, [xyz_normalized_pixels], summarize=10, message="xyz_normalized_pixels")
+        # lab_pixels = tf.Print(lab_pixels, [linear_mask], summarize=10, message="linear_mask")
+        # lab_pixels = tf.Print(lab_pixels, [exponential_mask], summarize=10, message="exponential_mask")
+        # lab_pixels = tf.Print(lab_pixels, [fxfyfz_pixels], summarize=10, message="fxfyfz_pixels")
+        # lab_pixels = tf.Print(lab_pixels, [lab_pixels], summarize=10, message="lab_pixels")
         return tf.reshape(lab_pixels, tf.shape(srgb))
+
+
+
+
+def batch_norm(input, name="batch_norm"):
+    with tf.variable_scope(name) as scope:
+        input = tf.identity(input)
+        channels = input.get_shape()[3]
+
+        offset = tf.get_variable("offset", [channels], dtype=tf.float32, initializer=tf.constant_initializer(0.0))
+        scale = tf.get_variable("scale", [channels], dtype=tf.float32, initializer=tf.random_normal_initializer(1.0, 0.02))
+
+        mean, variance = tf.nn.moments(input, axes=[0,1,2], keep_dims=False)
+
+        normalized_batch = tf.nn.batch_normalization(input, mean, variance, offset, scale, variance_epsilon=1e-5)
+
+        return normalized_batch 

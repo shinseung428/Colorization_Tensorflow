@@ -20,16 +20,18 @@ def images_reader(args):
 
 	orig_images = tf.image.decode_png(image_file, channels=3)
 	gray_images = tf.image.rgb_to_grayscale(orig_images)
-	# gray_images = tf.image.grayscale_to_rgb(gray_images)
+	#gray_images = tf.image.grayscale_to_rgb(gray_images)
 
 
-	orig_images = tf.image.resize_images(orig_images ,[args.input_width, args.input_height]) / 255.
-	gray_images = tf.image.resize_images(gray_images ,[args.input_width, args.input_height]) / 255.
+	orig_images = tf.image.resize_images(orig_images ,[args.input_height, args.input_width])
+	gray_images = tf.image.resize_images(gray_images ,[args.input_height, args.input_width])
+	orig_images = tf.image.convert_image_dtype(orig_images, dtype=tf.float32) / 255.#/ 127.5 - 1
+	gray_images = tf.image.convert_image_dtype(gray_images, dtype=tf.float32) / 255.#/ 127.5 - 1
 
 
 	orig, gray = tf.train.shuffle_batch([orig_images, gray_images],
 						  				 batch_size=args.batch_size,
-						  				 capacity=data_count,
+						  				 capacity=data_count*2,
 						  				 min_after_dequeue=args.batch_size
 						  				)
 

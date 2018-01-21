@@ -27,41 +27,40 @@ def train(args, sess, model):
         epoch = int(last_ckpt[len(ckpt_name)-1])
     else:
         tf.global_variables_initializer().run()
+        tf.local_variables_initializer().run()
 
 
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
 
-    if hasattr(model, 'rec_img_summary'):
-        all_summary = tf.summary.merge([model.img_summary,
-                                        model.rec_img_summary,
-                                        model.loss_summary,
-                                        model.acc_summary])
-    else:
-        all_summary = tf.summary.merge([model.img_summary,
-                                        model.loss_summary,
-                                        model.acc_summary])
+    all_summary = tf.summary.merge([model.input_img,
+                                    model.gray_img,
+                                    model.gt_lab,
+                                    model.pred_lab,
+                                    model.pred_rgb
+                                   ])
+
     
     writer = tf.summary.FileWriter(args.graphpath, sess.graph)
 
     while epoch < args.epochs:
-        summary, loss, acc, _ = sess.run([all_summary, 
-                                          model.loss, 
-                                          model.accuracy, 
-                                          optimizer])
+        summary, loss, _ = sess.run([all_summary, 
+                                     model.loss, 
+                                     optimizer])
         writer.add_summary(summary, overall_step)
 
-        print "Epoch [%d] step [%d] Training Loss: [%.4f] Accuracy: [%.4f]" % (epoch, step, loss, acc)
-
+        print "Epoch [%d] step [%d] Training Loss: [%.4f] " % (epoch, step, loss)
+        #if step == 0:
+        #    input("Done")
         step += 1
         overall_step += 1
 
-        if step*args.batch_size >= model.data_count:
-            saver.save(sess, args.checkpoints_path + "model", global_step=epoch)
-            print "Model saved at epoch %s" % str(epoch)                
-            epoch += 1
-            step = 0
+        #if step*args.batch_size >= model.data_count:
+        #    saver.save(sess, args.modelpath + "model", global_step=epoch)
+        #   print "Model saved at epoch %s" % str(epoch)                
+        #   epoch += 1
+        #    step = 0
 
     coord.request_stop()
     coord.join(threads)
