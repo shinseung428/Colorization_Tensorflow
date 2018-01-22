@@ -56,7 +56,7 @@ def train(args, sess, model):
 
         print "step [%d] Training Loss: [%.4f] " % (step, loss)
 
-        if step % 1 == 0:
+        if step % 1000 == 0:
             saver.save(sess, args.modelpath + "model", global_step=step)
             print "Model saved at step %s" % str(step)                
             
@@ -65,7 +65,7 @@ def train(args, sess, model):
                                                         model.orig:v_images_})
             img_tile(step, args, res)
 
-            step += 1
+        step += 1
 
 
     coord.request_stop()
