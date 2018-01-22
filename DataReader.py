@@ -26,10 +26,10 @@ def load_train_data(args):
 	gray_images = tf.image.resize_images(gray_images ,[args.input_height+size, args.input_width+size])
 
 	orig_images = tf.random_crop(orig_images, [args.input_height, args.input_width, 3])
-	gray_images = tf.random_crop(gray_images, [args.input_height, args.input_height, 1])
+	gray_images = tf.random_crop(gray_images, [args.input_height, args.input_width, 1])
 
-	orig_images = tf.random_flip_left_right(orig_images)
-	gray_images = tf.random_flip_left_right(gray_images)
+	orig_images = tf.image.random_flip_left_right(orig_images)
+	gray_images = tf.image.random_flip_left_right(gray_images)
 
 	orig_images = tf.image.convert_image_dtype(orig_images, dtype=tf.float32) / 255.#/ 127.5 - 1
 	gray_images = tf.image.convert_image_dtype(gray_images, dtype=tf.float32) / 255.#/ 127.5 - 1
