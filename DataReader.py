@@ -10,7 +10,7 @@ import cv2
 def images_reader(args):
 
 
-	paths = os.path.join(args.datapath, "flowers/*.png")
+	paths = os.path.join(args.datapath, "images/*.jpeg")
 	data_count = len(glob(paths))
 	
 	filename_queue = tf.train.string_input_producer(tf.train.match_filenames_once(paths))
@@ -18,7 +18,7 @@ def images_reader(args):
 	image_reader = tf.WholeFileReader()
 	_, image_file = image_reader.read(filename_queue)
 
-	orig_images = tf.image.decode_png(image_file, channels=3)
+	orig_images = tf.image.decode_jpeg(image_file, channels=3)
 	gray_images = tf.image.rgb_to_grayscale(orig_images)
 	#gray_images = tf.image.grayscale_to_rgb(gray_images)
 
