@@ -31,7 +31,7 @@ parser.add_argument('--input_height', dest='input_height', default=64, help='inp
 parser.add_argument('--continue_training', dest='continue_training', default=False, help='Flag to continue_training')
 
 parser.add_argument('--epochs', dest='epochs', default=500, help='maximum training epoch')
-parser.add_argument('--batch_size', dest='batch_size', default=32, help='batch size')
+parser.add_argument('--batch_size', dest='batch_size', default=64, help='batch size')
 
 parser.add_argument('--learning_rate', dest='learning_rate', default=0.0001, help='learning_rate size')
 parser.add_argument('--momentum', dest='momentum', default=0.5, help='momentum')

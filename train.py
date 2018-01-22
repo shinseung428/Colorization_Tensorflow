@@ -50,17 +50,18 @@ def train(args, sess, model):
                                      optimizer])
         writer.add_summary(summary, overall_step)
 
-        print "Epoch [%d] step [%d] Training Loss: [%.4f] " % (epoch, step, loss)
+        print "step [%d] Training Loss: [%.4f] " % (step, loss)
         #if step == 0:
         #    input("Done")
         step += 1
         overall_step += 1
 
         #if step*args.batch_size >= model.data_count:
-        #    saver.save(sess, args.modelpath + "model", global_step=epoch)
-        #   print "Model saved at epoch %s" % str(epoch)                
-        #   epoch += 1
-        #    step = 0
+        if step % 1000 == 0:
+            saver.save(sess, args.modelpath + "model", global_step=step)
+            print "Model saved at step %s" % str(step)                
+            #epoch += 1
+            step += 1
 
     coord.request_stop()
     coord.join(threads)
