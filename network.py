@@ -55,15 +55,13 @@ class network():
 		L_chan, a_chan, b_chan = preprocess_lab(gt_lab)
 		self.gt_lab = tf.stack([L_chan, a_chan, b_chan], axis=3)
 		gt_ab = tf.stack([a_chan, b_chan], axis=3)
-		
-		self.loss = tf.reduce_mean(tf.square(pred_ab - gt_ab))
 
 		#reconstruct rgb image using pred ab
 		pred_a, pred_b = tf.unstack(pred_ab, axis=3)
 		self.pred_lab = deprocess_lab(L_chan, pred_a, pred_b)
-
 		self.pred_rgb = deprocess(lab_to_rgb(self.pred_lab))
 
+		self.loss = tf.reduce_mean(tf.square(pred_ab - gt_ab))
 
 
 	def low_level_features_network(self, input, reuse=False, name="low_network"):

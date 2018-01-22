@@ -18,7 +18,8 @@ def str2bool(v):
 parser = argparse.ArgumentParser(description='')
 
 #folder path setting
-parser.add_argument('--datapath', dest='datapath', default='./data/', help='image datapath')
+parser.add_argument('--data', dest='data', default='./data/', help='image datapath')
+parser.add_argument('--images', dest='images', default='./images/', help='graph path')
 parser.add_argument('--modelpath', dest='modelpath', default='./models/', help='model checkpoint path')
 parser.add_argument('--graphpath', dest='graphpath', default='./graphs/', help='graph path')
 

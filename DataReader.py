@@ -10,7 +10,7 @@ import cv2
 def load_train_data(args):
 
 
-	paths = os.path.join(args.datapath, "images/*.jpeg")
+	paths = os.path.join(args.data, "training/*.jpeg")
 	data_count = len(glob(paths))
 	
 	filename_queue = tf.train.string_input_producer(tf.train.match_filenames_once(paths))
@@ -45,7 +45,6 @@ def load_train_data(args):
 
 
 
-
 #load different datasets
 def load_test_data(args):
 	
@@ -62,3 +61,17 @@ def load_test_data(args):
 
 	return image, image_3
 
+def load_valid_data(args):
+	paths = glob(os.path.join(args.data, "validation/*.jpg"))
+
+	all_images = []
+	for p in paths:
+		img = cv2.imread(p)
+		img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+		img = cv2.resize(img, (args.input_width, args.input_height))
+		all_images.append(img)
+
+	all_images = np.array(all_images)
+	all_images = all_images[...,np.newaxis]
+
+	return all_images

@@ -7,9 +7,13 @@ import sys
 
 from config import *
 from network import network
-
+from DataReader import *
+from utils import *
 
 def train(args, sess, model):
+    v_images = load_valid_data(args)
+
+
     #optimizer
     optimizer = tf.train.AdamOptimizer(args.learning_rate, beta1=args.momentum, name="AdamOptimizer").minimize(model.loss, var_list=model.trainable_vars)
 
@@ -60,6 +64,10 @@ def train(args, sess, model):
             saver.save(sess, args.modelpath + "model", global_step=step)
             print "Model saved at step %s" % str(step)                
             step += 1
+
+            res = sess.run([model.pred_rgb], feed_dict={model.gray:v_images})
+            img_tile(step, args, res)
+
 
     coord.request_stop()
     coord.join(threads)

@@ -30,7 +30,7 @@ The model implemented here is a lot smaller than the one described in the paper 
 * Tensorflow 1.3
 * cv2
 
-## Network Modelw
+## Network Model
 ![Alt text](images/network.jpg?raw=true "network")
 
 ## Training
