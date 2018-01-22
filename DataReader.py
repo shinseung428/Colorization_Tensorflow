@@ -65,13 +65,18 @@ def load_valid_data(args):
 	paths = glob(os.path.join(args.data, "validation/*.jpg"))
 
 	all_images = []
+	all_images_L = []
 	for p in paths:
 		img = cv2.imread(p)
 		img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 		img = cv2.resize(img, (args.input_width, args.input_height))
 		all_images.append(img)
+		img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+		all_images_L.append(img)
 
 	all_images = np.array(all_images)
-	all_images = all_images[...,np.newaxis]
+	all_images = all_images[...,np.newaxis] / 255.
 
-	return all_images
+
+
+	return all_images, np.tile(all_images, [1, 1, 1, 3])
