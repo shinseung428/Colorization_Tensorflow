@@ -9,19 +9,27 @@ class network():
 	def __init__(self, args):
 
 		#load image data X and label data Y
-		self.orig, self.gray, self.data_count = load_data(args)
+
+		if args.test_img == "":
+			self.orig, self.gray, self.data_count = load_train_data(args)
+		else:
+			# self.orig, self.gray, self.data_count = load_test_data(args)
+			self.orig = tf.placeholder(tf.float32, [args.batch_size, args.input_height, args.input_width, 3], name="orig")
+			self.gray = tf.placeholder(tf.float32, [args.batch_size, args.input_height, args.input_width, 1], name="gray")
+			self.data_count = args.batch_size
 
 		self.build_model()
 		self.build_loss()
 
 		#summary
+		self.loss_sum = tf.summary.scalar("loss", self.loss)
 		#GT
-		self.input_img = tf.summary.image("input_img", self.orig)
-		self.gray_img = tf.summary.image("gray_img", self.gray)
-		self.gt_lab = tf.summary.image("gt_lab", self.gt_lab)
+		self.input_img_sum = tf.summary.image("input_img", self.orig)
+		self.gray_img_sum = tf.summary.image("gray_img", self.gray)
+		self.gt_lab_sum = tf.summary.image("gt_lab", self.gt_lab)
 		#pred
-		self.pred_lab = tf.summary.image("pred_lab", self.pred_lab)
-		self.pred_rgb = tf.summary.image("pred_rgb", self.pred_rgb)
+		self.pred_lab_sum = tf.summary.image("pred_lab", self.pred_lab)
+		self.pred_rgb_sum = tf.summary.image("pred_rgb", self.pred_rgb)
 
 	def build_model(self):
 		low_out, low_nets = self.low_level_features_network(self.gray, name="low_level_features_network")
@@ -71,8 +79,6 @@ class network():
 			conv1 = batch_norm(conv1, name="conv1_bn")
 			nets.append(conv1)
 
-#			conv1 = tf.Print(conv1, [conv1], message="conv1")
-
 			conv2 = tf.contrib.layers.conv2d(conv1, 64,
 											 kernel_size=3, stride=1,
 											 padding="SAME",
@@ -119,6 +125,7 @@ class network():
 			nets.append(conv6)
 
 			output = conv6
+
 
 			return output, nets								 			
 
@@ -212,7 +219,7 @@ class network():
 	def colorization_network(self, input, name="colorization_network"):
 		nets = []
 		with tf.variable_scope(name) as scope:
-			deconv1 = tf.contrib.layers.conv2d_transpose(input, 64,
+			deconv1 = tf.contrib.layers.conv2d_transpose(input, 128,
 														 kernel_size=3, stride=1,
 														 padding="SAME",
 														 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -221,7 +228,7 @@ class network():
 			deconv1 = batch_norm(deconv1, name="deconv1_bn")
 			nets.append(deconv1)
 
-			deconv2 = tf.contrib.layers.conv2d_transpose(deconv1, 32,
+			deconv2 = tf.contrib.layers.conv2d_transpose(deconv1, 64,
 														 kernel_size=3, stride=2,
 														 padding="VALID",
 														 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -230,7 +237,7 @@ class network():
 			deconv2 = batch_norm(deconv2, name="deconv2_bn")		
 			nets.append(deconv2)
 
-			deconv3 = tf.contrib.layers.conv2d_transpose(deconv2, 32,
+			deconv3 = tf.contrib.layers.conv2d_transpose(deconv2, 64,
 														 kernel_size=3, stride=1,
 														 padding="SAME",
 														 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -239,7 +246,7 @@ class network():
 			deconv3 = batch_norm(deconv3, name="deconv3_bn")		
 			nets.append(deconv3)
 
-			deconv4 = tf.contrib.layers.conv2d_transpose(deconv3, 16,
+			deconv4 = tf.contrib.layers.conv2d_transpose(deconv3, 32,
 														 kernel_size=3, stride=2,
 														 padding="VALID",
 														 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -248,8 +255,8 @@ class network():
 			deconv4 = batch_norm(deconv4, name="deconv4_bn")	
 			nets.append(deconv4)			
 
-			deconv5 = tf.contrib.layers.conv2d_transpose(deconv4, 16,
-														 kernel_size=4, stride=2,
+			deconv5 = tf.contrib.layers.conv2d_transpose(deconv4, 32,
+														 kernel_size=3, stride=2,
 														 padding="VALID",
 														 weights_initializer=tf.contrib.layers.xavier_initializer(),
 														 activation_fn=tf.nn.relu,

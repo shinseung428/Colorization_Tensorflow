@@ -6,16 +6,12 @@ import argparse
 import sys
 
 from config import *
+from DataReader import *
 from network import network
 import cv2
 
 def test(args, sess, model):
-    #optimizer
-    optimizer = tf.train.AdamOptimizer(args.learning_rate, beta1=args.momentum, name="AdamOptimizer").minimize(model.loss, var_list=model.trainable_vars)
-
-    epoch = 0
-    step = 0
-    overall_step = 0
+    image, image_3 = load_test_data(args)
 
     #saver
     saver = tf.train.Saver()        
@@ -32,9 +28,12 @@ def test(args, sess, model):
     
     writer = tf.summary.FileWriter(args.graphpath, sess.graph)
 
-    res_rgb = sess.run(model.pred_rgb)
-    cv2.imshow("result", res_rgb)
-    cv2.waitKey(1)
+    # res_rgb = sess.run(model.pred_rgb)
+    res_rgb = sess.run([model.pred_rgb], feed_dict={model.gray: image, model.orig: image_3})
+    res_image = res_rgb[0][0]
+
+    cv2.imshow("result", res_image)
+    cv2.waitKey()
 
     coord.request_stop()
     coord.join(threads)
@@ -57,7 +56,7 @@ def main(_):
             
 
         
-        print 'Start Training...'
+        print 'Processing Image...'
         test(args, sess, model)
 
 

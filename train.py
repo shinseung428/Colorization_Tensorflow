@@ -24,7 +24,7 @@ def train(args, sess, model):
         saver.restore(sess, last_ckpt)
         ckpt_name = str(last_ckpt)
         print "Loaded model file from " + ckpt_name
-        epoch = int(last_ckpt[len(ckpt_name)-1])
+        step = int(last_ckpt[len(ckpt_name)-1])
     else:
         tf.global_variables_initializer().run()
         tf.local_variables_initializer().run()
@@ -34,11 +34,12 @@ def train(args, sess, model):
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
 
-    all_summary = tf.summary.merge([model.input_img,
-                                    model.gray_img,
-                                    model.gt_lab,
-                                    model.pred_lab,
-                                    model.pred_rgb
+    all_summary = tf.summary.merge([model.loss_sum,
+                                    model.input_img_sum,
+                                    model.gray_img_sum,
+                                    model.gt_lab_sum,
+                                    model.pred_lab_sum,
+                                    model.pred_rgb_sum
                                    ])
 
     

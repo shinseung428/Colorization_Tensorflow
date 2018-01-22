@@ -7,7 +7,7 @@ import math
 import cv2
 
 #============== Different Readers ==============
-def images_reader(args):
+def load_train_data(args):
 
 
 	paths = os.path.join(args.datapath, "images/*.jpeg")
@@ -20,7 +20,6 @@ def images_reader(args):
 
 	orig_images = tf.image.decode_jpeg(image_file, channels=3)
 	gray_images = tf.image.rgb_to_grayscale(orig_images)
-	#gray_images = tf.image.grayscale_to_rgb(gray_images)
 
 
 	orig_images = tf.image.resize_images(orig_images ,[args.input_height, args.input_width])
@@ -41,8 +40,18 @@ def images_reader(args):
 
 
 #load different datasets
-def load_data(args):
+def load_test_data(args):
 	
-	orig, gray, data_count = images_reader(args)
+	image = cv2.imread(args.test_img)
+	image_3 = image
+	image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+	image = cv2.resize(image, (args.input_width, args.input_height))
+	image = image[np.newaxis,...,np.newaxis]
+	image = np.tile(image, [args.batch_size, 1, 1, 1]) / 255.
 
-	return orig, gray, data_count 
+	image_3 = cv2.resize(image_3, (args.input_width, args.input_height))
+	image_3 = image_3[np.newaxis,...]
+	image_3 = np.tile(image_3, [args.batch_size, 1, 1, 1]) / 255.
+
+	return image, image_3
+

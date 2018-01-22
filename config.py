@@ -23,8 +23,8 @@ parser.add_argument('--modelpath', dest='modelpath', default='./models/', help='
 parser.add_argument('--graphpath', dest='graphpath', default='./graphs/', help='graph path')
 
 #Image/Output setting
-parser.add_argument('--input_width', dest='input_width', default=128, help='input image width')
-parser.add_argument('--input_height', dest='input_height', default=64, help='input image height')
+parser.add_argument('--input_width', dest='input_width', default=127, help='input image width')
+parser.add_argument('--input_height', dest='input_height', default=63, help='input image height')
 
 
 #Train setting
@@ -37,6 +37,7 @@ parser.add_argument('--learning_rate', dest='learning_rate', default=0.0001, hel
 parser.add_argument('--momentum', dest='momentum', default=0.5, help='momentum')
 
 #Test Setting
+parser.add_argument('--test_img', dest='test_img', default="", help='test image path')
 
 
 args = parser.parse_args()

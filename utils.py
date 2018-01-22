@@ -46,8 +46,8 @@ def lab_to_rgb(lab):
             lab_to_fxfyfz = tf.constant([
                 #   fx      fy        fz
                 [1.0/116.0, 1.0/116.0,  1.0/116.0], # l
-                [1.0/500.0,     0.0,      0.0], # a
-                [    0.0,     0.0, -1.0/200.0], # b
+                [1.0/500.0,       0.0,        0.0], # a
+                [      0.0,       0.0, -1.0/200.0], # b
             ])
             fxfyfz_pixels = tf.matmul(lab_pixels + tf.constant([16.0, 0.0, 0.0]), lab_to_fxfyfz)
 
