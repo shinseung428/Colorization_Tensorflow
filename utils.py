@@ -5,6 +5,7 @@ import os
 
 def img_tile(step, args, imgs, aspect_ratio=1.0, tile_shape=None, border=1, border_color=0):
   imgs = imgs[0]
+
   if imgs.ndim != 3 and imgs.ndim != 4:
     raise ValueError('imgs has wrong number of dimensions.')
   n_imgs = imgs.shape[0]

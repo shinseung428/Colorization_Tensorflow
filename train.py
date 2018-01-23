@@ -17,7 +17,6 @@ def train(args, sess, model):
     #optimizer
     optimizer = tf.train.AdamOptimizer(args.learning_rate, beta1=args.momentum, name="AdamOptimizer").minimize(model.loss, var_list=model.trainable_vars)
 
-    epoch = 0
     step = 0
 
     #saver
@@ -28,6 +27,7 @@ def train(args, sess, model):
         ckpt_name = str(last_ckpt)
         print "Loaded model file from " + ckpt_name
         step = int(ckpt_name.split('-')[-1])
+        tf.local_variables_initializer().run()
     else:
         tf.global_variables_initializer().run()
         tf.local_variables_initializer().run()
@@ -48,7 +48,7 @@ def train(args, sess, model):
     
     writer = tf.summary.FileWriter(args.graphpath, sess.graph)
 
-    while epoch < args.epochs:
+    while True:
         summary, loss, _ = sess.run([all_summary, 
                                      model.loss, 
                                      optimizer])
@@ -59,7 +59,6 @@ def train(args, sess, model):
         if step % 1000 == 0:
             saver.save(sess, args.modelpath + "model", global_step=step)
             print "Model saved at step %s" % str(step)                
-            
 
             res = sess.run([model.pred_rgb], feed_dict={model.gray:v_images,
                                                         model.orig:v_images_})

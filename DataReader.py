@@ -10,7 +10,7 @@ import cv2
 def load_train_data(args):
 
 
-	paths = os.path.join(args.data, "training/*.jpeg")
+	paths = os.path.join(args.data, "training/*.jpg")
 	data_count = len(glob(paths))
 	
 	filename_queue = tf.train.string_input_producer(tf.train.match_filenames_once(paths))
@@ -19,17 +19,13 @@ def load_train_data(args):
 	_, image_file = image_reader.read(filename_queue)
 
 	orig_images = tf.image.decode_jpeg(image_file, channels=3)
+	size = 5
+	orig_images = tf.image.resize_images(orig_images ,[args.input_height + size, args.input_width + size])
+	orig_images = tf.random_crop(orig_images, [args.input_height, args.input_width, 3])
+	orig_images = tf.image.random_flip_left_right(orig_images)
 	gray_images = tf.image.rgb_to_grayscale(orig_images)
 
-	size = 20
-	orig_images = tf.image.resize_images(orig_images ,[args.input_height+size, args.input_width+size])
-	gray_images = tf.image.resize_images(gray_images ,[args.input_height+size, args.input_width+size])
 
-	orig_images = tf.random_crop(orig_images, [args.input_height, args.input_width, 3])
-	gray_images = tf.random_crop(gray_images, [args.input_height, args.input_width, 1])
-
-	orig_images = tf.image.random_flip_left_right(orig_images)
-	gray_images = tf.image.random_flip_left_right(gray_images)
 
 	orig_images = tf.image.convert_image_dtype(orig_images, dtype=tf.float32) / 255.#/ 127.5 - 1
 	gray_images = tf.image.convert_image_dtype(gray_images, dtype=tf.float32) / 255.#/ 127.5 - 1
