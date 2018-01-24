@@ -3,6 +3,8 @@
 Tensorflow mplementation of [Let there be Color](http://hi.cs.waseda.ac.jp/~iizuka/projects/colorization/en/) paper published in 2016.  
 The model implemented here is a lot smaller than the one described in the paper due to resource issue.  
 
+The model is still being trained  
+
 ## What's different
 * no classification network  
 * all the output filter size other than the colorization network is reduced to half  
@@ -49,4 +51,8 @@ $ python test.py --test_img=test1.jpg
 ```
 
 
+## Results so far
+![Alt text](images/training.jpg?raw=true "results")
 
+## Target so far
+![Alt text](images/animated.gif?raw=true "animation")

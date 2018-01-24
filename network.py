@@ -132,7 +132,7 @@ class network():
 	def global_features_network(self, input, name="global_network"):
 		nets = []
 		with tf.variable_scope(name) as scope:
-			conv1 = tf.contrib.layers.conv2d(input, 512,
+			conv1 = tf.contrib.layers.conv2d(input, 256,
 											 kernel_size=3, stride=2,
 											 padding="VALID",
 											 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -141,7 +141,7 @@ class network():
 			conv1 = batch_norm(conv1, name="conv1_bn")	
 			nets.append(conv1)
 
-			conv2 = tf.contrib.layers.conv2d(conv1, 512,
+			conv2 = tf.contrib.layers.conv2d(conv1, 256,
 											 kernel_size=3, stride=1,
 											 padding="SAME",
 											 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -150,7 +150,7 @@ class network():
 			conv2 = batch_norm(conv2, name="conv2_bn")
 			nets.append(conv2)
 
-			conv3 = tf.contrib.layers.conv2d(conv2, 512,
+			conv3 = tf.contrib.layers.conv2d(conv2, 256,
 											 kernel_size=3, stride=2,
 											 padding="VALID",
 											 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -159,7 +159,7 @@ class network():
 			conv3 = batch_norm(conv3, name="conv3_bn")
 			nets.append(conv3)
 
-			conv4 = tf.contrib.layers.conv2d(conv3, 512,
+			conv4 = tf.contrib.layers.conv2d(conv3, 256,
 											 kernel_size=3, stride=1,
 											 padding="SAME",
 											 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -169,17 +169,17 @@ class network():
 			nets.append(conv4)
 
 			flattened = tf.contrib.layers.flatten(conv4)
-			fc1 = tf.contrib.layers.fully_connected(flattened, num_outputs=1024,
+			fc1 = tf.contrib.layers.fully_connected(flattened, num_outputs=512,
 													weights_initializer=tf.contrib.layers.xavier_initializer(),
 													activation_fn=tf.nn.relu,
 													scope="fc1"
 													)
-			fc2 = tf.contrib.layers.fully_connected(fc1, num_outputs=512,
+			fc2 = tf.contrib.layers.fully_connected(fc1, num_outputs=256,
 													weights_initializer=tf.contrib.layers.xavier_initializer(),
 													activation_fn=tf.nn.relu,
 													scope="fc2"
 													)
-			fc3 = tf.contrib.layers.fully_connected(fc2, num_outputs=256,
+			fc3 = tf.contrib.layers.fully_connected(fc2, num_outputs=128,
 													weights_initializer=tf.contrib.layers.xavier_initializer(),
 													activation_fn=tf.nn.relu,
 													scope="fc3"
@@ -191,7 +191,7 @@ class network():
 	def middle_level_features_network(self, input, name="middle_network"):
 		nets = []
 		with tf.variable_scope(name) as scope:
-			conv1 = tf.contrib.layers.conv2d(input, 512,
+			conv1 = tf.contrib.layers.conv2d(input, 256,
 											 kernel_size=3, stride=1,
 											 padding="SAME",
 											 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -200,7 +200,7 @@ class network():
 			conv1 = batch_norm(conv1, name="conv1_bn")
 			nets.append(conv1)
 
-			conv2 = tf.contrib.layers.conv2d(conv1, 256,
+			conv2 = tf.contrib.layers.conv2d(conv1, 128,
 											 kernel_size=3, stride=1,
 											 padding="SAME",
 											 weights_initializer=tf.contrib.layers.xavier_initializer(),
@@ -280,7 +280,7 @@ class network():
 			fuse_ready = tf.concat([middle_input, reshaped_global], axis=3)
 			fuse_ready_shape = fuse_ready.get_shape()
 			fuse_ready = fuse_ready[...,tf.newaxis]
-			fuse_weight = tf.get_variable("weight", shape=[fuse_ready_shape[0], fuse_ready_shape[1], fuse_ready_shape[2], 512, 256])		
+			fuse_weight = tf.get_variable("weight", shape=[fuse_ready_shape[0], fuse_ready_shape[1], fuse_ready_shape[2], 256, 128])		
 			fused = tf.matmul(fuse_ready, fuse_weight, transpose_a=True)
 			fused = tf.squeeze(fused, axis=-2)
 
