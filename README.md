@@ -1,7 +1,7 @@
 # Let there be Color Tensorflow
 
 Tensorflow mplementation of [Let there be Color](http://hi.cs.waseda.ac.jp/~iizuka/projects/colorization/en/) paper published in 2016.  
-The model implemented here is a lot smaller than the one described in the paper due to resource issue.  
+Some of the settings are smaller than the one described in the paper due to lack of computing power.  
 
 The model is still being trained  
 
