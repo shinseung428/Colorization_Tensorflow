@@ -9,9 +9,9 @@ The model is still being trained
 * no classification network  
 * input size is reduced to 63x63 (larger input gives OOM error)  
 
-## Available dataset
-* flowers
-* images
+## Dataset
+* [Places Dataset](http://places2.csail.mit.edu/download.html)
+Validation set is used as a training data (Training data's too large to deal with)  
 
 ### Folder setting
 ```
