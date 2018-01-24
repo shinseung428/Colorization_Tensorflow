@@ -55,4 +55,4 @@ $ python test.py --test_img=test1.jpg
 ![Alt text](images/training.jpg?raw=true "results")
 
 ## Target so far
-![Alt text](images/animated.gif?raw=true "animation")
+![Alt text](images/animated.gif?style=centerme "animation")
