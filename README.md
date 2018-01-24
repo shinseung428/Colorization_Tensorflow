@@ -7,8 +7,7 @@ The model is still being trained
 
 ## What's different
 * no classification network  
-* all the output filter size other than the colorization network is reduced to half  
-* input size is reduced to 63x127 (larger input gives OOM error)  
+* input size is reduced to 63x63 (larger input gives OOM error)  
 
 ## Available dataset
 * flowers
