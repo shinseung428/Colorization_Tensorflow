@@ -16,14 +16,14 @@ Validation set is used as a training data (Training data's too large to deal wit
 ### Folder setting
 ```
 -data
-  -flowers
-    -img1.jpg
-    -img2.jpg
-    -...
-  -images
+  -training
     -img1.jpg
     -img2.jpg
     -...  
+  -validation
+    -val1.jpg
+    -val2.jpg
+    -...
 ```
 
 ## Requirements
