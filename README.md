@@ -55,3 +55,6 @@ $ python test.py --test_img=test1.jpg
 
 ## Target so far
 ![Alt text](images/animated.gif?style=centerme "animation")
+
+## Referenced
+* pix2pix
