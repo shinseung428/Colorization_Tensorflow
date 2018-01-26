@@ -8,6 +8,7 @@ The model is still being trained
 ## What's different
 * no classification network  
 * input size is reduced to 63x63 (larger input gives OOM error)  
+* conv2d_transpose used in colorization network
 
 ## Dataset
 * [Places Dataset](http://places2.csail.mit.edu/download.html)  
