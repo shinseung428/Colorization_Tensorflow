@@ -8,9 +8,10 @@ The model is still being trained
 ## What's different
 * no classification network  
 * input size is reduced to 63x63 (larger input gives OOM error)  
+* conv2d_transpose used in colorization network
 
 ## Dataset
-* [Places Dataset](http://places2.csail.mit.edu/download.html)
+* [Places Dataset](http://places2.csail.mit.edu/download.html)  
 Validation set is used as a training data (Training data's too large to deal with)  
 
 ### Folder setting
@@ -55,3 +56,6 @@ $ python test.py --test_img=test1.jpg
 
 ## Target
 ![Alt text](images/animated.gif?style=centerme "animation")
+
+## Referenced
+* pix2pix
