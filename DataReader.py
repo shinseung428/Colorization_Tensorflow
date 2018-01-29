@@ -46,6 +46,7 @@ def load_test_data(args):
 	
 	image = cv2.imread(args.test_img)
 	image_3 = image
+
 	image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 	image = cv2.resize(image, (args.input_width, args.input_height))
 	image = image[np.newaxis,...,np.newaxis]

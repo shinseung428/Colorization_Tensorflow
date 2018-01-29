@@ -50,8 +50,8 @@ $ python test.py --test_img=test1.jpg
 ```
 
 
-## Results so far
+## Training Results
 ![Alt text](images/training.jpg?raw=true "results")
 
-## Target so far
+## Target
 ![Alt text](images/animated.gif?style=centerme "animation")
