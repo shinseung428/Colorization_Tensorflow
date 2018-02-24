@@ -3,8 +3,6 @@
 Tensorflow mplementation of [Let there be Color](http://hi.cs.waseda.ac.jp/~iizuka/projects/colorization/en/) paper published in 2016.  
 Some of the settings are smaller than the one described in the paper due to lack of computing power.  
 
-The model is still being trained  
-
 ## What's different
 * no classification network  
 * input size is reduced to 63x63 (larger input gives OOM error)  
